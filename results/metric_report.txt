@@ -1,0 +1,87 @@
+sklearn 1.6.1 | numpy 2.0.2 | pandas 2.3.3
+
+======================================================================
+1) FULL MODEL — random 80/20 split (current setup)
+======================================================================
+
+[FULL / random split]  n_test=33,254  base_rate=0.142
+  ROC-AUC 0.924 (no-skill .500)  |  PR-AUC 0.795 (no-skill 0.142 -> 5.6x chance)
+  Brier 0.0578 (base 0.1216)  |  LogLoss 0.2069 (base 0.4079)
+  P@top 5% 0.986  (captures 35% of real medalists)
+  P@top10% 0.845  (captures 60% of real medalists)
+  P@top20% 0.560  (captures 79% of real medalists)
+  @0.50 threshold: precision=0.887 recall=0.560 F1=0.686
+  confusion@0.5: TP=2636 FP=337 FN=2073 TN=28208 | accuracy=0.928  vs 'predict-none' 0.858
+  calibration by decile (pred vs actual):
+    bin0: pred 0.026  actual 0.023  n=22516
+    bin1: pred 0.143  actual 0.116  n=4212
+    bin2: pred 0.245  actual 0.224  n=1884
+    bin3: pred 0.346  actual 0.348  n=1068
+    bin4: pred 0.446  actual 0.456  n=601
+    bin5: pred 0.547  actual 0.624  n=471
+    bin6: pred 0.653  actual 0.782  n=422
+    bin7: pred 0.750  actual 0.896  n=471
+    bin8: pred 0.855  actual 0.968  n=560
+    bin9: pred 0.953  actual 0.999  n=1049
+  ECE (expected calibration error) = 0.0150
+
+======================================================================
+2) ABLATION — what carries the signal?
+======================================================================
+  BODY+demo (Age/Ht/Wt/BMI/Sex/Sport)    ROC 0.710 | PR 0.291
+  CONTEXT (country/event/history)        ROC 0.922 | PR 0.800
+  FULL minus team-size feature           ROC 0.921 | PR 0.786
+  FULL (all features)                    ROC 0.924 | PR 0.795
+
+======================================================================
+3) LEAKAGE-SAFE VALIDATION (does 0.92 survive a harder test?)
+======================================================================
+
+[TEMPORAL: train<=2008, test 2012+2016 (predicts the FUTURE)]  n_test=26,608  base_rate=0.149
+  ROC-AUC 0.799 (no-skill .500)  |  PR-AUC 0.475 (no-skill 0.149 -> 3.2x chance)
+  Brier 0.1037 (base 0.1268)  |  LogLoss 0.3577 (base 0.4209)
+  P@top 5% 0.635  (captures 21% of real medalists)
+  P@top10% 0.536  (captures 36% of real medalists)
+  P@top20% 0.415  (captures 56% of real medalists)
+
+[GROUP 5-fold by athlete ID — same athlete never in train+test]
+  ROC-AUC 0.919 +/- 0.003  |  PR-AUC 0.785 +/- 0.009
+
+======================================================================
+4) PERMUTATION IMPORTANCE (drop in ROC-AUC when feature shuffled)
+======================================================================
+NOC                           0.1541
+Sport                         0.0450
+Prior_NOC_Sport_Medal_Rate    0.0449
+Prior_Event_Medal_Rate        0.0391
+Event_Year_Athletes           0.0291
+NOC_Event_Year_Athletes       0.0202
+NOC_Year_Athletes             0.0089
+Years_since_1960              0.0081
+Prior_NOC_Medal_Rate          0.0073
+NOC_Sport_Year_Athletes       0.0072
+Athlete_Event_Count           0.0067
+Age                           0.0035
+Height                        0.0032
+BMI                           0.0023
+Weight                        0.0022
+Sex                           0.0005
+
+======================================================================
+5) UNIVARIATE ROC-AUC (each numeric feature alone)
+======================================================================
+  Age                          0.533
+  Height                       0.575
+  Weight                       0.577
+  BMI                          0.555
+  Years_since_1960             0.515
+  NOC_Year_Athletes            0.680
+  NOC_Sport_Year_Athletes      0.669
+  Event_Year_Athletes          0.521
+  NOC_Event_Year_Athletes      0.638
+  Athlete_Event_Count          0.445
+  Prior_NOC_Medal_Rate         0.711
+  Prior_NOC_Sport_Medal_Rate   0.778
+  Prior_Event_Medal_Rate       0.709
+
+DONE
