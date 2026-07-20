@@ -95,4 +95,4 @@ The full analysis also explores female participation trends (1960–2016), medal
 
 ---
 
-*Originally developed for the FBLA 2025–26 Data Analysis national competition by Sohaib Qurashi, with teammates Khan and Sujayakumar.*
+*Originally developed for the FBLA 2025–26 Data Analysis national competition by Sohaib Qurashi.*
